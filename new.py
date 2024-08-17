@@ -76,33 +76,42 @@ def create_pdf(data, table_data):
     return pdf_file
 
 def main():
-    # Custom favicon and browser title
+    # Custom favicon, browser title, header, and subtitle
     st.markdown("""
+        <head>
+            <link rel="icon" href="https://example.com/path/to/your/favicon.ico" type="image/x-icon">
+            <title>Custom Streamlit App Title</title>
+        </head>
         <style>
-            .title {
+            /* Header Style */
+            .header {
                 text-align: center;
                 font-size: 40px;
-                color: #1f77b4;
+                color: #2E86C1; /* Modern blue color */
                 font-family: 'Arial', sans-serif;
+                margin-top: 20px;
+                margin-bottom: 10px;
             }
+            /* Subtitle Style */
             .subtitle {
                 text-align: center;
                 font-size: 24px;
-                color: #ff7f0e;
+                color: #1F618D; /* Slightly darker blue for contrast */
                 font-family: 'Arial', sans-serif;
+                margin-bottom: 30px;
             }
+            /* Footer Style */
             .footer {
                 text-align: center;
                 font-size: 12px;
                 color: grey;
                 font-family: 'Arial', sans-serif;
+                margin-top: 20px;
             }
-            /* Adding custom favicon */
-            <link rel="icon" href="https://example.com/path/to/your/favicon.ico" type="image/x-icon">
-            /* Changing the browser tab title */
-            <title>Custom Streamlit App Title</title>
         </style>
-        """, unsafe_allow_html=True)
+        <div class="header">Cost Benefit Analysis</div>
+        <div class="subtitle">Developed by ITTI</div>
+    """, unsafe_allow_html=True)
 
     # Initialize session state
     if 'page' not in st.session_state:
