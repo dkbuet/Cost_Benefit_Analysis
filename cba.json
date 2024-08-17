@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cost-benefit-analysis",
+  "private_key_id": "983291016cd5023acd2603b5b6beef57d420b0b9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjhm4DMycckBbp\nCqD2GiZ7EQSYC9n6BDjS4qrgJ2K1eM8OpGIRgXofcmJd9SWrZAT8wetgQtqCXUMf\nNg3KxjvmD1+cNll2YsOr5wM4B8dovMdTMoF23sryuEFEznqEDn8gxExYR7Cb/swK\n+DTfGBkyBzySRSlhwGqb9hejOwPEoLLFP8d8kjbCbwpqxzT1oixwTrCFOtA1vF0P\n2aieVexWHxQWhsbBVqtDXG1Teww+FRgEz/ajkxcsWTQFc3m+IvyXM3BvCE/p29gU\nAfSMReCTYTS5EKJNRchiYqISI7n3QcOnCva/DQm5Jsgzoxl7yTnO7M5yAjQEh2QW\nteadMpO7AgMBAAECggEAGJNBjEnkj7Et6EGjKr6HrZ4Ynnsa0Vf6FuNewnIuLk9P\ncDK51EoCSaCTR5iUhoXxDpqxc4AzPj1NiEQY3YezhSHRVh+ANr+lYCZx1ZABuBa1\ng/uGo7qG2I8NVrhghuEg2j1LVfHBiSgej8Aj6KqX+sHwqJuBRRdkTje1RLWVSDg6\n4Ai44l9d5H6npUHnzChMCOovpG7KWYoyMFDdZDgh/ATpy4NQSrYTeHC9vDguGMqe\nfwC8t7MeTeZgj4/ygSdVNNJGWiXdr8zSDyxTl7zRXWNdnNsydhFxmeJq+P/IrvK+\n86VzbGZCAM7Xf80EZASf6m8YlgubZ9bwpCfk9g0s+QKBgQDOphHw7qxbb2fyTsSj\n4Yf/lAasacfW/MeRVzsS7CvGbmNMgbOKMN3zXJMlFhDOOoxBa6HLKoZNgLPG/Hv8\n+tgvsylxkNRLEeXDjHkcLWzlmehLIXoPeMO7CYwCAmzYR4TLaz411EgDTN7hkhMM\nWgaJNQJ9yu83+ooCGBUTfN5AGQKBgQDKk+cIl0HU1HVNF5cNszkdIB1kVdnE4QCV\n/bAHWBAFUN6irK/2N1pDktxxQr3CbCAPqkFhgNfZvMiB7gwlHFhc+UMVJSobdOn+\nQ1juPJ9p+y6KYKRAB6ZbzvjD4omxqhqjkTrDWwUuKcEAu2lPO6pfJjhVgDTqAZpJ\n4nBdJCEc8wKBgGe16w0rC6978wQlygShfLqlFNBU6mmYRaRIzioKA1I8NnPAKFYz\nfkDT9jlHoLmPorJ2jSXEutCMxi0YrDVjwzn1RdhsIk9mtRR2HJYqqht1KaMDMxou\ntrTY7r5Xbz8AbcIVmYw0dMvLOZSl1g994wfbZduyDGrgv4Cbi4BTS8uJAoGBAK7E\nguFqfST8Vma4H112baOu/Sx+1G2CIFtGjgMH+mpbpnd5vCUTBBCgNwaPqd5+Ifrh\ny54u5gm3UNSnZlrt5V3wvesUMQuXBfiSabq/Glj4luJTFeEXuHIkUYHNgzV/p5PN\ny4CWmhWFeDkFdokg1I9aDefVv9DSqSVs8bupW9f5AoGASWH9HDDD+7CoHcg4dW+A\nVGkl5WQSranxd5ZJs+B21BCWUaWeBRulPqkUq8dyXIdV9Ug+38Jz3A7LHGOCDqbk\nj1frB/ApLGN5/2H3W4Hu13heuX8bhb7Vy7Y+nYNS6NXD4rU36old29TAlitcke4y\nU5AT/2vdASKtBUYw+GQoTfA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "debabrata@cost-benefit-analysis.iam.gserviceaccount.com",
+  "client_id": "106358090532487513087",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/debabrata%40cost-benefit-analysis.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
