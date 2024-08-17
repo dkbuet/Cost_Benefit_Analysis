@@ -216,7 +216,7 @@ def main():
 
                 # Check for empty values and D1 value
                 if has_empty_values(selected_values) or float(sheet.cell(1, 4).value) > 0:
-                    st.error("Please fill in all financial information fields before proceeding.")
+                    st.error("Please fill in all information fields before proceeding.")
                 else:
                     navigate_page("next")
                     st.rerun()
@@ -254,7 +254,7 @@ def main():
                     navigate_page("next")
                     st.rerun()
                 else:
-                    st.error("Please fill in all financial information fields before proceeding.")
+                    st.error("Please fill in all information fields before proceeding.")
 
     # Results page
     elif st.session_state.page == 2:
