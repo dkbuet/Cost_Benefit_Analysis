@@ -83,15 +83,27 @@ def main():
             <title>Custom Streamlit App Title</title>
         </head>
         <style>
+            :root {
+                --header-color: #000000; /* Default color for header in light mode */
+                --subtitle-color: #333333; /* Default color for subtitle in light mode */
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --header-color: #ffffff; /* White color for header in dark mode */
+                    --subtitle-color: #e0e0e0; /* Lighter grey color for subtitle in dark mode */
+                }
+            }
+
             /* Header Style */
             .header {
                 text-align: center;
-                font-size: 4vw; /* Responsive font size */
-                color: #000000; /* Black color */
+                font-size: 3.5vw; /* Reduced font size */
+                color: var(--header-color); /* Use CSS variable for color */
                 font-family: 'Arial', sans-serif;
-                margin-top: 20px;
-                margin-bottom: 10px;
-                max-font-size: 28px; /* Maximum font size for desktop */
+                font-weight: bold; /* Make header bold */
+                margin: 0; /* Remove default margins */
+                padding: 0; /* Remove default padding */
                 white-space: nowrap; /* Prevent line breaks */
                 overflow: hidden; /* Hide overflow */
                 text-overflow: ellipsis; /* Add ellipsis if text is too long */
@@ -99,11 +111,14 @@ def main():
             /* Subtitle Style */
             .subtitle {
                 text-align: center;
-                font-size: 2.5vw; /* Responsive font size */
-                color: #000000; /* Black color */
+                font-size: 2vw; /* Reduced font size */
+                color: var(--subtitle-color); /* Use CSS variable for color */
                 font-family: 'Arial', sans-serif;
-                margin-bottom: 30px;
-                max-font-size: 16px; /* Maximum font size for desktop */
+                margin: 0; /* Remove default margins */
+                padding: 0; /* Remove default padding */
+                white-space: nowrap; /* Prevent line breaks */
+                overflow: hidden; /* Hide overflow */
+                text-overflow: ellipsis; /* Add ellipsis if text is too long */
             }
             /* Footer Style */
             .footer {
@@ -116,12 +131,10 @@ def main():
             /* Responsive adjustments */
             @media (max-width: 600px) {
                 .header {
-                    font-size: 8vw; /* Larger font size for small screens */
-                    max-font-size: 24px; /* Adjusted maximum font size */
+                    font-size: 6vw; /* Larger font size for small screens */
                 }
                 .subtitle {
-                    font-size: 5vw; /* Larger font size for small screens */
-                    max-font-size: 16px; /* Adjusted maximum font size */
+                    font-size: 4vw; /* Larger font size for small screens */
                 }
             }
         </style>
