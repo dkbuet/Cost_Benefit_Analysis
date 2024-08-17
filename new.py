@@ -86,19 +86,24 @@ def main():
             /* Header Style */
             .header {
                 text-align: center;
-                font-size: 40px;
-                color: #2E86C1; /* Modern blue color */
+                font-size: 4vw; /* Responsive font size */
+                color: #000000; /* Black color */
                 font-family: 'Arial', sans-serif;
                 margin-top: 20px;
                 margin-bottom: 10px;
+                max-font-size: 28px; /* Maximum font size for desktop */
+                white-space: nowrap; /* Prevent line breaks */
+                overflow: hidden; /* Hide overflow */
+                text-overflow: ellipsis; /* Add ellipsis if text is too long */
             }
             /* Subtitle Style */
             .subtitle {
                 text-align: center;
-                font-size: 24px;
-                color: #1F618D; /* Slightly darker blue for contrast */
+                font-size: 2.5vw; /* Responsive font size */
+                color: #000000; /* Black color */
                 font-family: 'Arial', sans-serif;
                 margin-bottom: 30px;
+                max-font-size: 16px; /* Maximum font size for desktop */
             }
             /* Footer Style */
             .footer {
@@ -107,6 +112,17 @@ def main():
                 color: grey;
                 font-family: 'Arial', sans-serif;
                 margin-top: 20px;
+            }
+            /* Responsive adjustments */
+            @media (max-width: 600px) {
+                .header {
+                    font-size: 8vw; /* Larger font size for small screens */
+                    max-font-size: 24px; /* Adjusted maximum font size */
+                }
+                .subtitle {
+                    font-size: 5vw; /* Larger font size for small screens */
+                    max-font-size: 16px; /* Adjusted maximum font size */
+                }
             }
         </style>
         <div class="header">Cost Benefit Analysis</div>
@@ -253,7 +269,7 @@ def main():
             st.dataframe(table_df, width=800)
 
         # Align the buttons as requested
-        col1, col2, col3 = st.columns([1, 2, 1])
+        col1, col2 = st.columns([1, 1])
         with col1:
             if st.button("Previous", key="prev_button_results"):
                 navigate_page("prev")
@@ -266,14 +282,6 @@ def main():
                 st.write("PDF generated!")
                 with open(pdf_file, "rb") as pdf:
                     st.download_button("Download PDF", pdf, file_name="result_summary.pdf", help="Click to download the PDF")
-
-        with col3:
-            if st.button("Next", key="next_button_results"):
-                if all_filled:
-                    navigate_page("next")
-                    st.rerun()
-                else:
-                    st.error("Please fill in all result fields before proceeding.")
 
     st.markdown("""
         <div class="footer">Thank you for using ITTI's CBA tool!</div>
