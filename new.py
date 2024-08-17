@@ -6,7 +6,7 @@ import pandas as pd
 
 # Google Sheets API setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_file("E:\\OneDrive - BUET\\Desktop\\cba.json", scopes=scope)
+creds = Credentials.from_service_account_file("cba.json", scopes=scope)
 client = gspread.authorize(creds)
 
 # Google Sheets ID
