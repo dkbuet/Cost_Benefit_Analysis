@@ -9,6 +9,28 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 creds = Credentials.from_service_account_file("cba.json", scopes=scope)
 client = gspread.authorize(creds)
 
+
+# Define the scope
+scope = [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive'
+]
+
+# Load credentials
+creds = Credentials.from_service_account_file(
+    'cba.json',
+    scopes=scope
+)
+
+# Authorize gspread
+gc = gspread.authorize(creds)
+
+
+
+
+
+
+
 # Google Sheets ID
 sheet_keys = "1XpA_PibK6so1uLMzVIT7-g32gcp7DdTHV4eBp1_7jcc"
 
