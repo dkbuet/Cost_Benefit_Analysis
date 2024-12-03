@@ -5,16 +5,11 @@ from fpdf import FPDF
 import pandas as pd
 
 # Google Sheets API setup
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 creds = Credentials.from_service_account_file("cba.json", scopes=scope)
 client = gspread.authorize(creds)
 
 
-# Define the scope
-scope = [
-    'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive'
-]
 
 # Load credentials
 creds = Credentials.from_service_account_file(
