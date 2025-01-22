@@ -296,6 +296,7 @@ generate_pdf_report(1000000, 1500000, 300000, 4, 0.18, cash_flow_df)
 
 
 # Initialize Streamlit app
+
 css_code = """
     <style>
         .responsive-header {
@@ -326,6 +327,18 @@ css_code = """
         }
     </style>
 """
+
+# Display the CSS and HTML in Streamlit
+st.markdown(css_code, unsafe_allow_html=True)
+
+# Add the HTML content
+st.markdown("""
+    <div class="responsive-header">
+        <h1>Cost-Benefit Analysis Tool</h1>
+        <h2>Developed by ITTI</h2>
+    </div>
+""", unsafe_allow_html=True)
+
 
 
 # Initialize session state for navigation and persistent values
