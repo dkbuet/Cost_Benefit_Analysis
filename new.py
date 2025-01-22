@@ -296,35 +296,36 @@ generate_pdf_report(1000000, 1500000, 300000, 4, 0.18, cash_flow_df)
 
 
 # Initialize Streamlit app
-st.markdown(
-    """
+css_code = """
     <style>
+        .responsive-header {
+            color: black; /* Default color for light mode */
+        }
+
         .responsive-header h1 {
-            color: green;
             text-decoration: underline;
             font-weight: bold;
             text-align: center;
             font-size: clamp(25px, 4vw, 35px); /* Min: 25px, Preferred: 4vw, Max: 35px */
             margin-bottom: 0px;
         }
+
         .responsive-header h2 {
-            color: black;
             text-decoration: none;
             font-weight: normal;
             text-align: center;
             font-size: clamp(20px, 2.5vw, 25px); /* Min: 20px, Preferred: 2.5vw, Max: 25px */
             margin-top: 0px;
         }
+
+        /* Dark mode styling */
+        @media (prefers-color-scheme: dark) {
+            .responsive-header {
+                color: white; /* White for dark mode */
+            }
+        }
     </style>
-    <div class="responsive-header">
-        <h1>Cost-Benefit Analysis Tool</h1>
-        <h2>Developed by ITTI</h2>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
+"""
 
 
 # Initialize session state for navigation and persistent values
