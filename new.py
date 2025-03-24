@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy_financial as npf  # For IRR calculation
 import pandas as pd  # For data table display
-from fpdf2 import FPDF  # Using fpdf2 instead of fpdf
+from fpdf2 import FPDF  # Using fpdf2
 import numpy as np
 import math
 import io
@@ -168,7 +168,7 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
 
     # Output PDF to memory
     pdf_buffer = io.BytesIO()
-    pdf.output(pdf_buffer)  # fpdf2 uses output() differently; it writes to a file-like object directly
+    pdf.output(pdf_buffer)
     pdf_buffer.seek(0)
     return pdf_buffer
 
