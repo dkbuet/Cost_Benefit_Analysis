@@ -292,7 +292,7 @@ if st.session_state.current_section == "Financial Information":
     st.session_state.financial_data["fingerlings_cost"] = st.number_input("Fingerling Cost per Piece (BDT)", min_value=0.0, value=st.session_state.financial_data["fingerlings_cost"], step=0.1)
     yearly_production = st.session_state.plan_data["yearly_production"]
     fingerling_quantity = (yearly_production * 1000) / 40  # Assuming 40g final weight per fish
-    total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
+    st.session_state.financial_data["total_fingerling_cost"] = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
 
     st.subheader("Feed Cost")
     st.session_state.financial_data["fcr"] = st.number_input("Feed Conversion Ratio (FCR)", min_value=0.0, value=st.session_state.financial_data["fcr"], step=0.1)
@@ -317,6 +317,12 @@ if st.session_state.current_section == "Results":
         st.session_state.financial_data["infrastructure_cost"] +
         st.session_state.financial_data["construction_labor_cost"]
     )
+    
+    # Recalculate total_fingerling_cost in the Results section
+    yearly_production = st.session_state.plan_data["yearly_production"]
+    fingerling_quantity = (yearly_production * 1000) / 40  # Assuming 40g final weight per fish
+    total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
+
     operational_cost = (
         st.session_state.financial_data["electricity_cost"] +
         st.session_state.financial_data["marketing_cost"] +
