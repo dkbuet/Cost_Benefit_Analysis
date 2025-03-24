@@ -131,7 +131,7 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.ln(10)
     pdf.set_font("Times", 'B', size=12)
     pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
-    pdf.set_font("Times", size=10)  # Corrected from "Times imam"
+    pdf.set_font("Times", size=10)
 
     if pd.isna(irr) or irr is None:
         irr_comment = "The Internal Rate of Return (IRR) could not be calculated due to insufficient or undefined cash flows."
@@ -158,11 +158,11 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.set_font("Times", 'B', size=12)
     pdf.cell(200, 10, txt="Conclusion", ln=True)
     pdf.set_font("Times", size=10)
-    if pd.isna(irr) or irr is None or payback_period is None:
-        conclusion_text = "Financial viability could not be assessed due to missing data."
-    elif irr > 0.20 and payback_period < 3:
+    if pd.isna(irr) or irr is None:
+        conclusion_text = "Financial viability could not be assessed due to missing or undefined cash flows."
+    elif irr > 0.20 and payback_period is not None and payback_period < 3:
         conclusion_text = "The project is highly attractive with excellent IRR and a short payback period."
-    elif irr <= 0.10 or payback_period > 5:
+    elif irr <= 0.10 or (payback_period is not None and payback_period > 5):
         conclusion_text = "The project has low IRR and/or a long payback period, indicating potential risks."
     else:
         conclusion_text = "The project shows moderate viability; further evaluation is recommended."
@@ -206,13 +206,13 @@ if "plan_data" not in st.session_state:
     }
 if "financial_data" not in st.session_state:
     st.session_state.financial_data = {
-        "initial_investment": 12000000.0,
-        "equipment_cost": 5000000.0,
-        "land_cost": 4000000.0,
-        "infrastructure_cost": 2000000.0,
-        "construction_labor_cost": 1000000.0,
+        "initial_investment": 5000000.0,  # Reduced for feasibility
+        "equipment_cost": 2000000.0,
+        "land_cost": 1500000.0,
+        "infrastructure_cost": 1000000.0,
+        "construction_labor_cost": 500000.0,
         "electricity_cost": 438000.0,
-        "selling_price": 350.0,
+        "selling_price": 400.0,  # Increased for higher revenue
         "fcr": 1.5,
         "salary_payment": 600000.0,
         "maintenance_cost": 240000.0,
