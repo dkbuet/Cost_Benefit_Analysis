@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy_financial as npf  # For IRR calculation
 import pandas as pd  # For data table display
-from fpdf import FPDF
+from fpdf2 import FPDF  # Using fpdf2 instead of fpdf
 import numpy as np
 import math
 import io
@@ -85,14 +85,14 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.add_page()
 
     # Title
-    pdf.set_font("Times", 'B', size=16)
+    pdf.set_font("times", "B", size=16)
     pdf.cell(200, 10, txt="Cost-Benefit Analysis Report", ln=True, align="C")
     pdf.ln(10)
 
     # Project Overview Section
-    pdf.set_font("Times", 'BU', size=12)
-    pdf.cell(200, 10, txt="Project Overview", ln=True, align='L')
-    pdf.set_font("Times", size=10)
+    pdf.set_font("times", "BU", size=12)
+    pdf.cell(200, 10, txt="Project Overview", ln=True, align="L")
+    pdf.set_font("times", size=10)
     report_text = (
         f"Initial Investment: {initial_investment:,.2f} BDT\n"
         f"Estimated Annual Revenue: {estimated_revenue:,.2f} BDT\n"
@@ -107,18 +107,18 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.ln(10)
 
     # Cash Flow Table
-    pdf.set_font("Times", 'BU', size=12)
-    pdf.cell(200, 10, txt="Cash Flow Chart", ln=True, align='L')
-    pdf.set_font("Times", 'B', size=10)
+    pdf.set_font("times", "BU", size=12)
+    pdf.cell(200, 10, txt="Cash Flow Chart", ln=True, align="L")
+    pdf.set_font("times", "B", size=10)
     pdf.cell(30, 10, "Year", border=1, align="C")
     pdf.cell(45, 10, "Cash In (BDT)", border=1, align="C")
     pdf.cell(45, 10, "Cash Out (BDT)", border=1, align="C")
     pdf.cell(60, 10, "Cumulative Cash Flow (BDT)", border=1, align="C")
     pdf.ln()
 
-    pdf.set_font("Times", size=10)
+    pdf.set_font("times", size=10)
     for i, row in cash_flow_data.iterrows():
-        pdf.cell(30, 10, str(int(row['Year'])), border=1, align="C")
+        pdf.cell(30, 10, str(int(row["Year"])), border=1, align="C")
         pdf.cell(45, 10, f"{int(row['Cash In']):,}", border=1, align="R")
         pdf.cell(45, 10, f"{int(row['Cash Out']):,}", border=1, align="R")
         pdf.cell(60, 10, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
@@ -126,9 +126,9 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
 
     # Financial Analysis and Comments
     pdf.ln(10)
-    pdf.set_font("Times", 'B', size=12)
+    pdf.set_font("times", "B", size=12)
     pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
-    pdf.set_font("Times", size=10)
+    pdf.set_font("times", size=10)
 
     if pd.isna(irr) or irr is None:
         irr_comment = "The Internal Rate of Return (IRR) could not be calculated due to insufficient or undefined cash flows."
@@ -153,9 +153,9 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.ln(10)
 
     # Conclusion
-    pdf.set_font("Times", 'B', size=12)
+    pdf.set_font("times", "B", size=12)
     pdf.cell(200, 10, txt="Conclusion", ln=True)
-    pdf.set_font("Times", size=10)
+    pdf.set_font("times", size=10)
     if pd.isna(irr) or irr is None or payback_period is None:
         conclusion_text = "Financial viability could not be assessed due to missing data."
     elif irr > 0.20 and payback_period < 3:
@@ -168,7 +168,7 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
 
     # Output PDF to memory
     pdf_buffer = io.BytesIO()
-    pdf.output(dest='F', name=pdf_buffer)  # Write to BytesIO object
+    pdf.output(pdf_buffer)  # fpdf2 uses output() differently; it writes to a file-like object directly
     pdf_buffer.seek(0)
     return pdf_buffer
 
