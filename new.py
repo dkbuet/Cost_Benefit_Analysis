@@ -131,7 +131,7 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.ln(10)
     pdf.set_font("Times", 'B', size=12)
     pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
-    pdf.set_font("Times", size=10)
+    pdf.set_font("Times imam", size=10)
 
     if pd.isna(irr) or irr is None:
         irr_comment = "The Internal Rate of Return (IRR) could not be calculated due to insufficient or undefined cash flows."
@@ -211,14 +211,14 @@ if "financial_data" not in st.session_state:
         "land_cost": 4000000.0,
         "infrastructure_cost": 2000000.0,
         "construction_labor_cost": 1000000.0,
-        "electricity_cost": 438000.0,
+        "electricity_cost": 438000.0,  # Default matches expected value
         "selling_price": 350.0,
         "fcr": 1.5,
         "salary_payment": 600000.0,
         "maintenance_cost": 240000.0,
         "marketing_cost": 180000.0,
         "fingerlings_cost": 2.5,
-        "feed_cost_per_kg": 60.0,  # Renamed to avoid confusion
+        "feed_cost_per_kg": 60.0,
         "project_lifetime": 10,
     }
 
@@ -272,7 +272,7 @@ if st.session_state.current_section == "Financial Information":
     )
 
     st.subheader("Operational Costs")
-    electric_load_kwh = st.number_input("Electric Load Requirement (kW)", min_value=0.0, value=60.0, step=10.0)
+    electric_load_kwh = st.number_input("Electric Load Requirement (kW)", min_value=0.0, value=6.0, step=1.0)  # Adjusted to match 438,000 BDT
     hours_per_day, days_per_year = 20, 365
     yearly_electricity_demand = electric_load_kwh * hours_per_day * days_per_year
     electricity_rate = st.number_input("Electricity Rate (BDT per kWh)", min_value=0.0, value=10.0, step=0.5)
@@ -301,18 +301,19 @@ if st.session_state.current_section == "Financial Information":
     project_lifetime = st.number_input("Project Lifetime (Years)", min_value=1, value=st.session_state.financial_data["project_lifetime"], step=1)
 
     if st.button("Next - Results"):
-        # Update session state with calculated values
-        st.session_state.financial_data["electricity_cost"] = electricity_cost
-        st.session_state.financial_data["marketing_cost"] = marketing_cost
-        st.session_state.financial_data["maintenance_cost"] = maintenance_cost
-        st.session_state.financial_data["fingerlings_cost"] = fingerlings_cost
-        st.session_state.financial_data["total_fingerling_cost"] = total_fingerling_cost
-        st.session_state.financial_data["fcr"] = fcr
-        st.session_state.financial_data["feed_cost_per_kg"] = feed_cost_per_kg
-        st.session_state.financial_data["feed_cost"] = feed_cost
-        st.session_state.financial_data["selling_price"] = selling_price
-        st.session_state.financial_data["salary_payment"] = salary_payment
-        st.session_state.financial_data["project_lifetime"] = project_lifetime
+        st.session_state.financial_data.update({
+            "electricity_cost": electricity_cost,
+            "marketing_cost": marketing_cost,
+            "maintenance_cost": maintenance_cost,
+            "fingerlings_cost": fingerlings_cost,
+            "total_fingerling_cost": total_fingerling_cost,
+            "fcr": fcr,
+            "feed_cost_per_kg": feed_cost_per_kg,
+            "feed_cost": feed_cost,
+            "selling_price": selling_price,
+            "salary_payment": salary_payment,
+            "project_lifetime": project_lifetime
+        })
         st.session_state.current_section = "Results"
 
 # Results Section
@@ -324,7 +325,7 @@ if st.session_state.current_section == "Results":
         st.session_state.financial_data["construction_labor_cost"]
     )
 
-    # Recalculate all costs to ensure consistency
+    # Recalculate costs for consistency
     fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40
     total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
     yearly_feed_requirement = st.session_state.financial_data["fcr"] * st.session_state.plan_data["yearly_production"]
