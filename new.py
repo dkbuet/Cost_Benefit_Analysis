@@ -131,7 +131,7 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.ln(10)
     pdf.set_font("Times", 'B', size=12)
     pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
-    pdf.set_font("Times imam", size=10)
+    pdf.set_font("Times", size=10)  # Corrected from "Times imam"
 
     if pd.isna(irr) or irr is None:
         irr_comment = "The Internal Rate of Return (IRR) could not be calculated due to insufficient or undefined cash flows."
@@ -211,7 +211,7 @@ if "financial_data" not in st.session_state:
         "land_cost": 4000000.0,
         "infrastructure_cost": 2000000.0,
         "construction_labor_cost": 1000000.0,
-        "electricity_cost": 438000.0,  # Default matches expected value
+        "electricity_cost": 438000.0,
         "selling_price": 350.0,
         "fcr": 1.5,
         "salary_payment": 600000.0,
@@ -272,7 +272,7 @@ if st.session_state.current_section == "Financial Information":
     )
 
     st.subheader("Operational Costs")
-    electric_load_kwh = st.number_input("Electric Load Requirement (kW)", min_value=0.0, value=6.0, step=1.0)  # Adjusted to match 438,000 BDT
+    electric_load_kwh = st.number_input("Electric Load Requirement (kW)", min_value=0.0, value=6.0, step=1.0)
     hours_per_day, days_per_year = 20, 365
     yearly_electricity_demand = electric_load_kwh * hours_per_day * days_per_year
     electricity_rate = st.number_input("Electricity Rate (BDT per kWh)", min_value=0.0, value=10.0, step=0.5)
@@ -325,7 +325,6 @@ if st.session_state.current_section == "Results":
         st.session_state.financial_data["construction_labor_cost"]
     )
 
-    # Recalculate costs for consistency
     fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40
     total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
     yearly_feed_requirement = st.session_state.financial_data["fcr"] * st.session_state.plan_data["yearly_production"]
