@@ -34,7 +34,6 @@ def calculate_payback_period(cumulative_cash_flow):
 
 # Function to print all results as text output
 def print_results(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
-    # Handle IRR formatting safely
     irr_display = "N/A"
     if irr is not None and not pd.isna(irr):
         irr_display = f"{irr:.2%}"
@@ -89,12 +88,10 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # Title
     pdf.set_font("Times", 'B', size=16)
     pdf.cell(200, 10, txt="Cost-Benefit Analysis Report", ln=True, align="C")
     pdf.ln(10)
 
-    # Project Overview Section
     pdf.set_font("Times", 'BU', size=12)
     pdf.cell(200, 10, txt="Project Overview", ln=True, align='L')
     pdf.set_font("Times", size=10)
@@ -114,7 +111,6 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.multi_cell(0, 7, report_text)
     pdf.ln(10)
 
-    # Cash Flow Table
     pdf.set_font("Times", 'BU', size=12)
     pdf.cell(200, 10, txt="Cash Flow Chart", ln=True, align='L')
     pdf.set_font("Times", 'B', size=10)
@@ -132,7 +128,6 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         pdf.cell(60, 10, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
         pdf.ln()
 
-    # Financial Analysis and Comments
     pdf.ln(10)
     pdf.set_font("Times", 'B', size=12)
     pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
@@ -160,7 +155,6 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
     pdf.multi_cell(0, 5, combined_comment)
     pdf.ln(10)
 
-    # Conclusion
     pdf.set_font("Times", 'B', size=12)
     pdf.cell(200, 10, txt="Conclusion", ln=True)
     pdf.set_font("Times", size=10)
@@ -174,7 +168,6 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         conclusion_text = "The project shows moderate viability; further evaluation is recommended."
     pdf.multi_cell(0, 5, conclusion_text)
 
-    # Output PDF to memory
     pdf_buffer = io.BytesIO()
     pdf.output(dest='F', name=pdf_buffer)
     pdf_buffer.seek(0)
@@ -207,26 +200,26 @@ if "plan_data" not in st.session_state:
     st.session_state.plan_data = {
         "culture_type": "Intensive",
         "species": "Pabda",
-        "yearly_production": 10000.0,  # 10 tons, realistic for a small-medium farm
-        "tank_number": 6,  # Reasonable number of tanks for the volume
-        "year_of_investment": 2025,  # Current planning year
+        "yearly_production": 10000.0,  # 10 tons
+        "tank_number": 6,
+        "year_of_investment": 2025,
     }
 if "financial_data" not in st.session_state:
     st.session_state.financial_data = {
-        "initial_investment": 12000000.0,  # Total initial investment (sum of below)
-        "equipment_cost": 5000000.0,  # Pumps, aerators, tanks, etc.
-        "land_cost": 4000000.0,  # 1-2 acres of land in rural area
-        "infrastructure_cost": 2000000.0,  # Sheds, piping, etc.
-        "construction_labor_cost": 1000000.0,  # Labor for setup
-        "electricity_cost": 438000.0,  # Calculated below (realistic estimate)
-        "selling_price": 350.0,  # Market price per kg for Pabda
-        "fcr": 1.5,  # Feed Conversion Ratio (industry standard)
-        "salary_payment": 600000.0,  # 2-3 employees at ~20,000 BDT/month each
-        "maintenance_cost": 240000.0,  # Yearly maintenance (2% of equipment cost)
-        "marketing_cost": 180000.0,  # Yearly marketing (15,000 BDT/month)
-        "fingerlings_cost": 2.5,  # Cost per fingerling (realistic market rate)
-        "feed_cost": 60.0,  # Cost per kg of feed (industry average)
-        "project_lifetime": 10,  # Typical lifespan for such a project
+        "initial_investment": 12000000.0,
+        "equipment_cost": 5000000.0,
+        "land_cost": 4000000.0,
+        "infrastructure_cost": 2000000.0,
+        "construction_labor_cost": 1000000.0,
+        "electricity_cost": 438000.0,
+        "selling_price": 350.0,
+        "fcr": 1.5,
+        "salary_payment": 600000.0,
+        "maintenance_cost": 240000.0,
+        "marketing_cost": 180000.0,
+        "fingerlings_cost": 2.5,
+        "feed_cost": 60.0,
+        "project_lifetime": 10,
     }
 
 # Sidebar Navigation
@@ -279,11 +272,11 @@ if st.session_state.current_section == "Financial Information":
     )
 
     st.subheader("Operational Costs")
-    electric_load_kwh = st.number_input("Electric Load Requirement (kWh)", min_value=0.0, value=60.0, step=10.0)  # 60 kW for pumps/aerators
+    electric_load_kwh = st.number_input("Electric Load Requirement (kWh)", min_value=0.0, value=60.0, step=10.0)
     hours_per_day, days_per_year = 20, 365
-    yearly_electricity_demand = electric_load_kwh * hours_per_day * days_per_year  # 438,000 kWh/year
-    electricity_rate = st.number_input("Electricity Rate (BDT per kWh)", min_value=0.0, value=10.0, step=0.5)  # Realistic rate
-    st.session_state.financial_data["electricity_cost"] = yearly_electricity_demand * electricity_rate  # ~4,38,000 BDT
+    yearly_electricity_demand = electric_load_kwh * hours_per_day * days_per_year
+    electricity_rate = st.number_input("Electricity Rate (BDT per kWh)", min_value=0.0, value=10.0, step=0.5)
+    st.session_state.financial_data["electricity_cost"] = yearly_electricity_demand * electricity_rate
 
     monthly_marketing_cost = st.number_input("Monthly Marketing Cost (BDT)", min_value=0.0, value=st.session_state.financial_data["marketing_cost"] / 12, step=1000.0)
     st.session_state.financial_data["marketing_cost"] = monthly_marketing_cost * 12
@@ -292,14 +285,14 @@ if st.session_state.current_section == "Financial Information":
     st.session_state.financial_data["maintenance_cost"] = monthly_maintenance_cost * 12
 
     st.session_state.financial_data["fingerlings_cost"] = st.number_input("Fingerling Cost per Piece (BDT)", min_value=0.0, value=st.session_state.financial_data["fingerlings_cost"], step=0.5)
-    fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40  # Assuming 40g final weight
-    total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
+    fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40
+    st.session_state.financial_data["total_fingerling_cost"] = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
 
     st.subheader("Feed Cost")
     st.session_state.financial_data["fcr"] = st.number_input("Feed Conversion Ratio (FCR)", min_value=0.0, value=st.session_state.financial_data["fcr"], step=0.1)
     feed_cost_per_kg = st.number_input("Feed Cost per kg (BDT)", min_value=0.0, value=st.session_state.financial_data["feed_cost"], step=1.0)
     yearly_feed_requirement = st.session_state.financial_data["fcr"] * st.session_state.plan_data["yearly_production"]
-    st.session_state.financial_data["feed_cost"] = yearly_feed_requirement * feed_cost_per_kg  # ~900,000 BDT
+    st.session_state.financial_data["feed_cost"] = yearly_feed_requirement * feed_cost_per_kg
 
     st.subheader("Revenue Inputs")
     st.session_state.financial_data["selling_price"] = st.number_input("Selling Price per Unit (BDT)", min_value=0.0, value=st.session_state.financial_data["selling_price"], step=5.0)
@@ -318,6 +311,11 @@ if st.session_state.current_section == "Results":
         st.session_state.financial_data["infrastructure_cost"] +
         st.session_state.financial_data["construction_labor_cost"]
     )
+
+    # Recalculate total_fingerling_cost in case it’s not set
+    fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40
+    total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
+
     operational_cost = (
         st.session_state.financial_data["electricity_cost"] +
         st.session_state.financial_data["marketing_cost"] +
