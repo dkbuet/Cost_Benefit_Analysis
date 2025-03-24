@@ -4,12 +4,9 @@ import pandas as pd  # For data table display
 import numpy as np
 import math
 import io
-
-try:
-    from fpdf2 import FPDF  # Using fpdf2
-except ModuleNotFoundError:
-    st.error("The 'fpdf2' module is not installed. Please ensure 'fpdf2==2.8.1' is in your requirements.txt and check deployment logs.")
-    raise
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 # Function to calculate water volume
 def calculate_water_volume(culture_type, species, yearly_production):
@@ -83,58 +80,48 @@ def print_results(initial_investment, estimated_revenue, operational_cost, payba
             mime="application/pdf"
         )
 
-# Function to generate PDF report
+# Function to generate PDF report using reportlab
 def generate_pdf_report(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
+    pdf_buffer = io.BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
+    elements = []
 
     # Title
-    pdf.set_font("times", "B", size=16)
-    pdf.cell(200, 10, txt="Cost-Benefit Analysis Report", ln=True, align="C")
-    pdf.ln(10)
+    elements.append(Paragraph("Cost-Benefit Analysis Report", styles["Title"]))
+    elements.append(Spacer(1, 12))
 
     # Project Overview Section
-    pdf.set_font("times", "BU", size=12)
-    pdf.cell(200, 10, txt="Project Overview", ln=True, align="L")
-    pdf.set_font("times", size=10)
+    elements.append(Paragraph("Project Overview", styles["Heading2"]))
     report_text = (
-        f"Initial Investment: {initial_investment:,.2f} BDT\n"
-        f"Estimated Annual Revenue: {estimated_revenue:,.2f} BDT\n"
-        f"Operational Cost per Year: {operational_cost:,.2f} BDT\n"
-        f"Project Payback Period (Years): {payback_period if payback_period is not None else 'N/A'}\n"
-        f"Internal Rate of Return (IRR): {round(irr*100,2) if irr is not None and not pd.isna(irr) else 'N/A'}%\n"
-        f"Total Water Volume Required: {total_volume} m³\n"
-        f"Tank Diameter: {tank_diameter} m\n"
-        f"Total Volume per Tank: {volume_per_tank} m³\n"
+        f"Initial Investment: {initial_investment:,.2f} BDT<br/>"
+        f"Estimated Annual Revenue: {estimated_revenue:,.2f} BDT<br/>"
+        f"Operational Cost per Year: {operational_cost:,.2f} BDT<br/>"
+        f"Project Payback Period (Years): {payback_period if payback_period is not None else 'N/A'}<br/>"
+        f"Internal Rate of Return (IRR): {round(irr*100,2) if irr is not None and not pd.isna(irr) else 'N/A'}%<br/>"
+        f"Total Water Volume Required: {total_volume} m³<br/>"
+        f"Tank Diameter: {tank_diameter} m<br/>"
+        f"Total Volume per Tank: {volume_per_tank} m³"
     )
-    pdf.multi_cell(0, 7, report_text)
-    pdf.ln(10)
+    elements.append(Paragraph(report_text, styles["BodyText"]))
+    elements.append(Spacer(1, 12))
 
     # Cash Flow Table
-    pdf.set_font("times", "BU", size=12)
-    pdf.cell(200, 10, txt="Cash Flow Chart", ln=True, align="L")
-    pdf.set_font("times", "B", size=10)
-    pdf.cell(30, 10, "Year", border=1, align="C")
-    pdf.cell(45, 10, "Cash In (BDT)", border=1, align="C")
-    pdf.cell(45, 10, "Cash Out (BDT)", border=1, align="C")
-    pdf.cell(60, 10, "Cumulative Cash Flow (BDT)", border=1, align="C")
-    pdf.ln()
-
-    pdf.set_font("times", size=10)
+    elements.append(Paragraph("Cash Flow Chart", styles["Heading2"]))
+    table_data = [["Year", "Cash In (BDT)", "Cash Out (BDT)", "Cumulative Cash Flow (BDT)"]]
     for i, row in cash_flow_data.iterrows():
-        pdf.cell(30, 10, str(int(row["Year"])), border=1, align="C")
-        pdf.cell(45, 10, f"{int(row['Cash In']):,}", border=1, align="R")
-        pdf.cell(45, 10, f"{int(row['Cash Out']):,}", border=1, align="R")
-        pdf.cell(60, 10, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
-        pdf.ln()
+        table_data.append([str(int(row["Year"])), f"{int(row['Cash In']):,}", f"{int(row['Cash Out']):,}", f"{int(row['Cumulative Cash Flow']):,}"])
+    table = Table(table_data)
+    table.setStyle([
+        ("GRID", (0, 0), (-1, -1), 1, "black"),
+        ("ALIGN", (0, 0), (-1, 0), "CENTER"),
+        ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
+    ])
+    elements.append(table)
+    elements.append(Spacer(1, 12))
 
     # Financial Analysis and Comments
-    pdf.ln(10)
-    pdf.set_font("times", "B", size=12)
-    pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
-    pdf.set_font("times", size=10)
-
+    elements.append(Paragraph("Financial Analysis and Comments", styles["Heading2"]))
     if pd.isna(irr) or irr is None:
         irr_comment = "The Internal Rate of Return (IRR) could not be calculated due to insufficient or undefined cash flows."
     elif irr > 0.20:
@@ -154,13 +141,11 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         payback_comment = f"The payback period is {payback_period} years, which is relatively long."
 
     combined_comment = f"{irr_comment} {payback_comment}"
-    pdf.multi_cell(0, 5, combined_comment)
-    pdf.ln(10)
+    elements.append(Paragraph(combined_comment, styles["BodyText"]))
+    elements.append(Spacer(1, 12))
 
     # Conclusion
-    pdf.set_font("times", "B", size=12)
-    pdf.cell(200, 10, txt="Conclusion", ln=True)
-    pdf.set_font("times", size=10)
+    elements.append(Paragraph("Conclusion", styles["Heading2"]))
     if pd.isna(irr) or irr is None or payback_period is None:
         conclusion_text = "Financial viability could not be assessed due to missing data."
     elif irr > 0.20 and payback_period < 3:
@@ -169,11 +154,10 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         conclusion_text = "The project has low IRR and/or a long payback period, indicating potential risks."
     else:
         conclusion_text = "The project shows moderate viability; further evaluation is recommended."
-    pdf.multi_cell(0, 5, conclusion_text)
+    elements.append(Paragraph(conclusion_text, styles["BodyText"]))
 
-    # Output PDF to memory
-    pdf_buffer = io.BytesIO()
-    pdf.output(pdf_buffer)
+    # Build PDF
+    doc.build(elements)
     pdf_buffer.seek(0)
     return pdf_buffer
 
