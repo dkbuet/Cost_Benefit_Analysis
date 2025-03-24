@@ -36,12 +36,15 @@ def calculate_payback_period(cumulative_cash_flow):
 
 # Function to print all results as text output
 def print_results(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
+    # Format IRR separately to avoid f-string formatting issues
+    irr_display = f"{irr:.2%}" if irr is not None and not pd.isna(irr) else "N/A"
+
     report_text = (
         f"Initial Investment: {initial_investment:,.2f} BDT\n"
         f"Estimated Annual Revenue: {estimated_revenue:,.2f} BDT\n"
         f"Operational Cost per Year: {operational_cost:,.2f} BDT\n"
         f"Project Payback Period (Years): {payback_period if payback_period is not None else 'N/A'}\n"
-        f"Internal Rate of Return (IRR): {irr:.2% if irr is not None and not pd.isna(irr) else 'N/A'}\n"
+        f"Internal Rate of Return (IRR): {irr_display}\n"
         f"Total Water Volume Required: {total_volume} m³\n"
         f"Tank Diameter: {tank_diameter} m\n"
         f"Total Volume per Tank: {volume_per_tank} m³\n"
@@ -98,7 +101,7 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         f"Estimated Annual Revenue: {estimated_revenue:,.2f} BDT<br/>"
         f"Operational Cost per Year: {operational_cost:,.2f} BDT<br/>"
         f"Project Payback Period (Years): {payback_period if payback_period is not None else 'N/A'}<br/>"
-        f"Internal Rate of Return (IRR): {round(irr*100,2) if irr is not None and not pd.isna(irr) else 'N/A'}%<br/>"
+        f"Internal Rate of Return (IRR): {f'{irr:.2%}' if irr is not None and not pd.isna(irr) else 'N/A'}<br/>"
         f"Total Water Volume Required: {total_volume} m³<br/>"
         f"Tank Diameter: {tank_diameter} m<br/>"
         f"Total Volume per Tank: {volume_per_tank} m³"
