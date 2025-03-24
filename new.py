@@ -82,91 +82,87 @@ def print_results(initial_investment, estimated_revenue, operational_cost, payba
             mime="application/pdf"
         )
 
-# Function to generate PDF report
+# Function to generate PDF report (fitted to one page)
 def generate_pdf_report(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    pdf.set_font("Times", 'B', size=16)
-    pdf.cell(200, 10, txt="Cost-Benefit Analysis Report", ln=True, align="C")
-    pdf.ln(10)
+    # Title
+    pdf.set_font("Times", 'B', size=14)  # Reduced from 16
+    pdf.cell(0, 8, txt="Cost-Benefit Analysis Report", ln=True, align="C")
+    pdf.ln(4)  # Reduced from 10
 
-    pdf.set_font("Times", 'BU', size=12)
-    pdf.cell(200, 10, txt="Project Overview", ln=True, align='L')
-    pdf.set_font("Times", size=10)
+    # Project Overview
+    pdf.set_font("Times", 'BU', size=10)  # Reduced from 12
+    pdf.cell(0, 6, txt="Project Overview", ln=True, align='L')
+    pdf.set_font("Times", size=8)  # Reduced from 10
     irr_display = "N/A"
     if irr is not None and not pd.isna(irr):
         irr_display = f"{round(irr * 100, 2)}%"
     report_text = (
-        f"Initial Investment: {initial_investment:,.2f} BDT\n"
-        f"Estimated Annual Revenue: {estimated_revenue:,.2f} BDT\n"
-        f"Operational Cost per Year: {operational_cost:,.2f} BDT\n"
-        f"Project Payback Period (Years): {payback_period if payback_period is not None else 'N/A'}\n"
-        f"Internal Rate of Return (IRR): {irr_display}\n"
-        f"Total Water Volume Required: {total_volume} m³\n"
-        f"Tank Diameter: {tank_diameter} m\n"
-        f"Total Volume per Tank: {volume_per_tank} m³\n"
+        f"Initial Investment: {initial_investment:,.0f} BDT  "
+        f"Annual Revenue: {estimated_revenue:,.0f} BDT  "
+        f"Operational Cost/Yr: {operational_cost:,.0f} BDT  "
+        f"Payback Period: {payback_period if payback_period is not None else 'N/A'} yrs  "
+        f"IRR: {irr_display}  "
+        f"Water Vol.: {total_volume} m³  "
+        f"Tank Dia.: {tank_diameter} m  "
+        f"Vol./Tank: {volume_per_tank} m³"
     )
-    pdf.multi_cell(0, 7, report_text)
-    pdf.ln(10)
+    pdf.multi_cell(0, 4, report_text)  # Reduced line height from 7 to 4
+    pdf.ln(4)  # Reduced from 10
 
-    pdf.set_font("Times", 'BU', size=12)
-    pdf.cell(200, 10, txt="Cash Flow Chart", ln=True, align='L')
-    pdf.set_font("Times", 'B', size=10)
-    pdf.cell(30, 10, "Year", border=1, align="C")
-    pdf.cell(45, 10, "Cash In (BDT)", border=1, align="C")
-    pdf.cell(45, 10, "Cash Out (BDT)", border=1, align="C")
-    pdf.cell(60, 10, "Cumulative Cash Flow (BDT)", border=1, align="C")
+    # Cash Flow Chart
+    pdf.set_font("Times", 'BU', size=10)  # Reduced from 12
+    pdf.cell(0, 6, txt="Cash Flow Chart", ln=True, align='L')
+    pdf.set_font("Times", 'B', size=7)  # Reduced from 10
+    pdf.cell(20, 5, "Year", border=1, align="C")  # Reduced width from 30
+    pdf.cell(35, 5, "Cash In (BDT)", border=1, align="C")  # Reduced from 45
+    pdf.cell(35, 5, "Cash Out (BDT)", border=1, align="C")  # Reduced from 45
+    pdf.cell(50, 5, "Cumulative CF (BDT)", border=1, align="C")  # Reduced from 60
     pdf.ln()
 
-    pdf.set_font("Times", size=10)
+    pdf.set_font("Times", size=7)  # Reduced from 10
     for i, row in cash_flow_data.iterrows():
-        pdf.cell(30, 10, str(int(row['Year'])), border=1, align="C")
-        pdf.cell(45, 10, f"{int(row['Cash In']):,}", border=1, align="R")
-        pdf.cell(45, 10, f"{int(row['Cash Out']):,}", border=1, align="R")
-        pdf.cell(60, 10, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
+        pdf.cell(20, 5, str(int(row['Year'])), border=1, align="C")
+        pdf.cell(35, 5, f"{int(row['Cash In']):,}", border=1, align="R")
+        pdf.cell(35, 5, f"{int(row['Cash Out']):,}", border=1, align="R")
+        pdf.cell(50, 5, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
         pdf.ln()
 
-    pdf.ln(10)
-    pdf.set_font("Times", 'B', size=12)
-    pdf.cell(200, 10, txt="Financial Analysis and Comments", ln=True)
-    pdf.set_font("Times", size=10)
+    pdf.ln(4)  # Reduced from 10
 
+    # Financial Analysis and Comments
+    pdf.set_font("Times", 'B', size=10)  # Reduced from 12
+    pdf.cell(0, 6, txt="Financial Analysis", ln=True)
+    pdf.set_font("Times", size=8)  # Reduced from 10
     if pd.isna(irr) or irr is None:
-        irr_comment = "The Internal Rate of Return (IRR) could not be calculated due to insufficient or undefined cash flows."
+        irr_comment = "IRR not calculable."
     elif irr > 0.20:
-        irr_comment = f"The Internal Rate of Return (IRR) is {irr:.2%}, indicating high profitability."
+        irr_comment = f"IRR {irr:.2%} indicates high profit."
     elif irr > 0.10:
-        irr_comment = f"The Internal Rate of Return (IRR) is {irr:.2%}, suggesting moderate returns."
+        irr_comment = f"IRR {irr:.2%} suggests moderate returns."
     else:
-        irr_comment = f"The Internal Rate of Return (IRR) is {irr:.2%}, which is low and may indicate risks."
-
-    if payback_period is None:
-        payback_comment = "The payback period could not be calculated due to insufficient cash flows."
-    elif payback_period < 3:
-        payback_comment = f"The payback period is {payback_period} years, a quick return on investment."
-    elif payback_period <= 5:
-        payback_comment = f"The payback period is {payback_period} years, which is reasonable."
-    else:
-        payback_comment = f"The payback period is {payback_period} years, which is relatively long."
-
+        irr_comment = f"IRR {irr:.2%} may indicate risks."
+    payback_comment = f"Payback: {payback_period if payback_period is not None else 'N/A'} yrs."
     combined_comment = f"{irr_comment} {payback_comment}"
-    pdf.multi_cell(0, 5, combined_comment)
-    pdf.ln(10)
+    pdf.multi_cell(0, 4, combined_comment)  # Reduced line height from 5
+    pdf.ln(4)  # Reduced from 10
 
-    pdf.set_font("Times", 'B', size=12)
-    pdf.cell(200, 10, txt="Conclusion", ln=True)
-    pdf.set_font("Times", size=10)
+    # Conclusion
+    pdf.set_font("Times", 'B', size=10)  # Reduced from 12
+    pdf.cell(0, 6, txt="Conclusion", ln=True)
+    pdf.set_font("Times", size=8)  # Reduced from 10
     if pd.isna(irr) or irr is None:
-        conclusion_text = "Financial viability could not be assessed due to missing or undefined cash flows."
+        conclusion_text = "Viability unclear due to missing cash flows."
     elif irr > 0.20 and payback_period is not None and payback_period < 3:
-        conclusion_text = "The project is highly attractive with excellent IRR and a short payback period."
+        conclusion_text = "Highly attractive project."
     elif irr <= 0.10 or (payback_period is not None and payback_period > 5):
-        conclusion_text = "The project has low IRR and/or a long payback period, indicating potential risks."
+        conclusion_text = "Low IRR/long payback; risks present."
     else:
-        conclusion_text = "The project shows moderate viability; further evaluation is recommended."
-    pdf.multi_cell(0, 5, conclusion_text)
+        conclusion_text = "Moderate viability; further review advised."
+    pdf.multi_cell(0, 4, conclusion_text)
 
     pdf_buffer = io.BytesIO()
     pdf.output(dest='F', name=pdf_buffer)
@@ -206,13 +202,13 @@ if "plan_data" not in st.session_state:
     }
 if "financial_data" not in st.session_state:
     st.session_state.financial_data = {
-        "initial_investment": 5000000.0,  # Reduced for feasibility
+        "initial_investment": 5000000.0,
         "equipment_cost": 2000000.0,
         "land_cost": 1500000.0,
         "infrastructure_cost": 1000000.0,
         "construction_labor_cost": 500000.0,
         "electricity_cost": 438000.0,
-        "selling_price": 400.0,  # Increased for higher revenue
+        "selling_price": 400.0,
         "fcr": 1.5,
         "salary_payment": 600000.0,
         "maintenance_cost": 240000.0,
