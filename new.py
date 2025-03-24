@@ -1,10 +1,15 @@
 import streamlit as st
-import numpy_financial as npf  # For IRR calculation
+import numpy_financial as npf  # Correct import for numpy-financial
 import pandas as pd  # For data table display
-from fpdf2 import FPDF  # Using fpdf2
 import numpy as np
 import math
 import io
+
+try:
+    from fpdf2 import FPDF  # Using fpdf2
+except ModuleNotFoundError:
+    st.error("The 'fpdf2' module is not installed. Please ensure 'fpdf2==2.8.1' is in your requirements.txt and check deployment logs.")
+    raise
 
 # Function to calculate water volume
 def calculate_water_volume(culture_type, species, yearly_production):
