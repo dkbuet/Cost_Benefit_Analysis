@@ -82,87 +82,79 @@ def print_results(initial_investment, estimated_revenue, operational_cost, payba
             mime="application/pdf"
         )
 
-# Function to generate PDF report (fitted to one page)
+# Function to generate PDF report (larger fonts, attractive, one page)
 def generate_pdf_report(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
     # Title
-    pdf.set_font("Times", 'B', size=14)  # Reduced from 16
-    pdf.cell(0, 8, txt="Cost-Benefit Analysis Report", ln=True, align="C")
-    pdf.ln(4)  # Reduced from 10
+    pdf.set_font("Times", 'B', size=14)
+    pdf.cell(0, 10, txt="Cost-Benefit Analysis Report", ln=True, align="C")
+    pdf.ln(5)
 
     # Project Overview
-    pdf.set_font("Times", 'BU', size=10)  # Reduced from 12
-    pdf.cell(0, 6, txt="Project Overview", ln=True, align='L')
-    pdf.set_font("Times", size=8)  # Reduced from 10
+    pdf.set_font("Times", 'B', size=12)  # Bold for emphasis
+    pdf.cell(0, 7, txt="Project Overview", ln=True, align='L')
+    pdf.set_font("Times", size=10)
     irr_display = "N/A"
     if irr is not None and not pd.isna(irr):
         irr_display = f"{round(irr * 100, 2)}%"
     report_text = (
-        f"Initial Investment: {initial_investment:,.0f} BDT  "
-        f"Annual Revenue: {estimated_revenue:,.0f} BDT  "
-        f"Operational Cost/Yr: {operational_cost:,.0f} BDT  "
-        f"Payback Period: {payback_period if payback_period is not None else 'N/A'} yrs  "
-        f"IRR: {irr_display}  "
-        f"Water Vol.: {total_volume} m³  "
-        f"Tank Dia.: {tank_diameter} m  "
-        f"Vol./Tank: {volume_per_tank} m³"
+        f"Investment: {initial_investment:,.0f} BDT  Revenue/Yr: {estimated_revenue:,.0f} BDT  Cost/Yr: {operational_cost:,.0f} BDT\n"
+        f"Payback: {payback_period if payback_period is not None else 'N/A'} yrs  IRR: {irr_display}  Water: {total_volume} m³  Tank Dia.: {tank_diameter} m  Vol./Tank: {volume_per_tank} m³"
     )
-    pdf.multi_cell(0, 4, report_text)  # Reduced line height from 7 to 4
-    pdf.ln(4)  # Reduced from 10
+    pdf.multi_cell(0, 5, report_text)  # Condensed to 2 lines
+    pdf.ln(5)
 
     # Cash Flow Chart
-    pdf.set_font("Times", 'BU', size=10)  # Reduced from 12
-    pdf.cell(0, 6, txt="Cash Flow Chart", ln=True, align='L')
-    pdf.set_font("Times", 'B', size=7)  # Reduced from 10
-    pdf.cell(20, 5, "Year", border=1, align="C")  # Reduced width from 30
-    pdf.cell(35, 5, "Cash In (BDT)", border=1, align="C")  # Reduced from 45
-    pdf.cell(35, 5, "Cash Out (BDT)", border=1, align="C")  # Reduced from 45
-    pdf.cell(50, 5, "Cumulative CF (BDT)", border=1, align="C")  # Reduced from 60
+    pdf.set_font("Times", 'B', size=12)
+    pdf.cell(0, 7, txt="Cash Flow Chart", ln=True, align='L')
+    pdf.set_font("Times", 'B', size=10)
+    pdf.cell(25, 6, "Year", border=1, align="C")
+    pdf.cell(40, 6, "Cash In", border=1, align="C")
+    pdf.cell(40, 6, "Cash Out", border=1, align="C")
+    pdf.cell(55, 6, "Cumulative CF", border=1, align="C")
     pdf.ln()
 
-    pdf.set_font("Times", size=7)  # Reduced from 10
+    pdf.set_font("Times", size=10)
     for i, row in cash_flow_data.iterrows():
-        pdf.cell(20, 5, str(int(row['Year'])), border=1, align="C")
-        pdf.cell(35, 5, f"{int(row['Cash In']):,}", border=1, align="R")
-        pdf.cell(35, 5, f"{int(row['Cash Out']):,}", border=1, align="R")
-        pdf.cell(50, 5, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
+        pdf.cell(25, 5, str(int(row['Year'])), border=1, align="C")  # Reduced row height to 5mm
+        pdf.cell(40, 5, f"{int(row['Cash In']):,}", border=1, align="R")
+        pdf.cell(40, 5, f"{int(row['Cash Out']):,}", border=1, align="R")
+        pdf.cell(55, 5, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
         pdf.ln()
+    pdf.ln(5)
 
-    pdf.ln(4)  # Reduced from 10
-
-    # Financial Analysis and Comments
-    pdf.set_font("Times", 'B', size=10)  # Reduced from 12
-    pdf.cell(0, 6, txt="Financial Analysis", ln=True)
-    pdf.set_font("Times", size=8)  # Reduced from 10
+    # Financial Analysis
+    pdf.set_font("Times", 'B', size=12)
+    pdf.cell(0, 7, txt="Financial Analysis", ln=True)
+    pdf.set_font("Times", size=10)
     if pd.isna(irr) or irr is None:
         irr_comment = "IRR not calculable."
     elif irr > 0.20:
-        irr_comment = f"IRR {irr:.2%} indicates high profit."
+        irr_comment = f"IRR {irr:.2%} shows high profitability."
     elif irr > 0.10:
-        irr_comment = f"IRR {irr:.2%} suggests moderate returns."
+        irr_comment = f"IRR {irr:.2%} indicates good returns."
     else:
-        irr_comment = f"IRR {irr:.2%} may indicate risks."
-    payback_comment = f"Payback: {payback_period if payback_period is not None else 'N/A'} yrs."
-    combined_comment = f"{irr_comment} {payback_comment}"
-    pdf.multi_cell(0, 4, combined_comment)  # Reduced line height from 5
-    pdf.ln(4)  # Reduced from 10
+        irr_comment = f"IRR {irr:.2%} suggests risks."
+    payback_comment = f"Payback in {payback_period if payback_period is not None else 'N/A'} yrs."
+    pdf.multi_cell(0, 5, f"{irr_comment} {payback_comment}")
+    pdf.ln(5)
 
-    # Conclusion
-    pdf.set_font("Times", 'B', size=10)  # Reduced from 12
-    pdf.cell(0, 6, txt="Conclusion", ln=True)
-    pdf.set_font("Times", size=8)  # Reduced from 10
+    # Elaborated Conclusion
+    pdf.set_font("Times", 'B', size=12)
+    pdf.cell(0, 7, txt="Conclusion", ln=True)
+    pdf.set_font("Times", size=10)
     if pd.isna(irr) or irr is None:
-        conclusion_text = "Viability unclear due to missing cash flows."
+        conclusion_text = "Financial viability unclear due to undefined cash flows. More data is needed for assessment."
     elif irr > 0.20 and payback_period is not None and payback_period < 3:
-        conclusion_text = "Highly attractive project."
+        conclusion_text = "This project is highly promising with strong returns and quick recovery. Ideal for investment."
     elif irr <= 0.10 or (payback_period is not None and payback_period > 5):
-        conclusion_text = "Low IRR/long payback; risks present."
+        conclusion_text = "Low IRR or long payback suggests risks. Consider cost reduction or revenue enhancement."
     else:
-        conclusion_text = "Moderate viability; further review advised."
-    pdf.multi_cell(0, 4, conclusion_text)
+        conclusion_text = "The project offers moderate viability with decent returns in a reasonable timeframe. Review market trends and costs before proceeding."
+    pdf.multi_cell(0, 5, conclusion_text)
 
     pdf_buffer = io.BytesIO()
     pdf.output(dest='F', name=pdf_buffer)
