@@ -1,6 +1,6 @@
 import streamlit as st
-import numpy_financial as npf  # For IRR calculation
-import pandas as pd  # For data table display
+import numpy_financial as npf
+import pandas as pd
 from fpdf import FPDF
 import numpy as np
 import math
@@ -9,16 +9,16 @@ import io
 # Function to calculate water volume
 def calculate_water_volume(culture_type, species, yearly_production):
     if culture_type == "Intensive":
-        culture_density = 80  # kg per m³
+        culture_density = 80
     elif culture_type == "Semi-Intensive":
-        culture_density = 60  # kg per m³
+        culture_density = 60
     else:
         raise ValueError("Invalid culture type")
 
     if species == "Pabda":
-        batch_per_year = 2.4  # batches per year
+        batch_per_year = 2.4
     elif species == "Gulsha":
-        batch_per_year = 2.6  # batches per year
+        batch_per_year = 2.6
     else:
         raise ValueError("Invalid species")
 
@@ -32,7 +32,7 @@ def calculate_payback_period(cumulative_cash_flow):
             return year
     return None
 
-# Function to print all results as text output
+# Function to print all results
 def print_results(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
     irr_display = "N/A"
     if irr is not None and not pd.isna(irr):
@@ -193,14 +193,14 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Session State Initialization with Realistic Values
+# Session State Initialization
 if "current_section" not in st.session_state:
     st.session_state.current_section = "Project Plan"
 if "plan_data" not in st.session_state:
     st.session_state.plan_data = {
         "culture_type": "Intensive",
         "species": "Pabda",
-        "yearly_production": 10000.0,  # 10 tons
+        "yearly_production": 10000.0,
         "tank_number": 6,
         "year_of_investment": 2025,
     }
@@ -218,7 +218,7 @@ if "financial_data" not in st.session_state:
         "maintenance_cost": 240000.0,
         "marketing_cost": 180000.0,
         "fingerlings_cost": 2.5,
-        "feed_cost": 60.0,
+        "feed_cost_per_kg": 60.0,  # Renamed to avoid confusion
         "project_lifetime": 10,
     }
 
@@ -272,35 +272,47 @@ if st.session_state.current_section == "Financial Information":
     )
 
     st.subheader("Operational Costs")
-    electric_load_kwh = st.number_input("Electric Load Requirement (kWh)", min_value=0.0, value=60.0, step=10.0)
+    electric_load_kwh = st.number_input("Electric Load Requirement (kW)", min_value=0.0, value=60.0, step=10.0)
     hours_per_day, days_per_year = 20, 365
     yearly_electricity_demand = electric_load_kwh * hours_per_day * days_per_year
     electricity_rate = st.number_input("Electricity Rate (BDT per kWh)", min_value=0.0, value=10.0, step=0.5)
-    st.session_state.financial_data["electricity_cost"] = yearly_electricity_demand * electricity_rate
+    electricity_cost = yearly_electricity_demand * electricity_rate
 
     monthly_marketing_cost = st.number_input("Monthly Marketing Cost (BDT)", min_value=0.0, value=st.session_state.financial_data["marketing_cost"] / 12, step=1000.0)
-    st.session_state.financial_data["marketing_cost"] = monthly_marketing_cost * 12
+    marketing_cost = monthly_marketing_cost * 12
 
     monthly_maintenance_cost = st.number_input("Monthly Maintenance Cost (BDT)", min_value=0.0, value=st.session_state.financial_data["maintenance_cost"] / 12, step=1000.0)
-    st.session_state.financial_data["maintenance_cost"] = monthly_maintenance_cost * 12
+    maintenance_cost = monthly_maintenance_cost * 12
 
-    st.session_state.financial_data["fingerlings_cost"] = st.number_input("Fingerling Cost per Piece (BDT)", min_value=0.0, value=st.session_state.financial_data["fingerlings_cost"], step=0.5)
+    fingerlings_cost = st.number_input("Fingerling Cost per Piece (BDT)", min_value=0.0, value=st.session_state.financial_data["fingerlings_cost"], step=0.5)
     fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40
-    st.session_state.financial_data["total_fingerling_cost"] = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
+    total_fingerling_cost = fingerlings_cost * fingerling_quantity
 
     st.subheader("Feed Cost")
-    st.session_state.financial_data["fcr"] = st.number_input("Feed Conversion Ratio (FCR)", min_value=0.0, value=st.session_state.financial_data["fcr"], step=0.1)
-    feed_cost_per_kg = st.number_input("Feed Cost per kg (BDT)", min_value=0.0, value=st.session_state.financial_data["feed_cost"], step=1.0)
-    yearly_feed_requirement = st.session_state.financial_data["fcr"] * st.session_state.plan_data["yearly_production"]
-    st.session_state.financial_data["feed_cost"] = yearly_feed_requirement * feed_cost_per_kg
+    fcr = st.number_input("Feed Conversion Ratio (FCR)", min_value=0.0, value=st.session_state.financial_data["fcr"], step=0.1)
+    feed_cost_per_kg = st.number_input("Feed Cost per kg (BDT)", min_value=0.0, value=st.session_state.financial_data["feed_cost_per_kg"], step=1.0)
+    yearly_feed_requirement = fcr * st.session_state.plan_data["yearly_production"]
+    feed_cost = yearly_feed_requirement * feed_cost_per_kg
 
     st.subheader("Revenue Inputs")
-    st.session_state.financial_data["selling_price"] = st.number_input("Selling Price per Unit (BDT)", min_value=0.0, value=st.session_state.financial_data["selling_price"], step=5.0)
+    selling_price = st.number_input("Selling Price per Unit (BDT)", min_value=0.0, value=st.session_state.financial_data["selling_price"], step=5.0)
 
-    st.session_state.financial_data["salary_payment"] = st.number_input("Employee Salary per Year (BDT)", min_value=0.0, value=st.session_state.financial_data["salary_payment"], step=10000.0)
-    st.session_state.financial_data["project_lifetime"] = st.number_input("Project Lifetime (Years)", min_value=1, value=st.session_state.financial_data["project_lifetime"], step=1)
+    salary_payment = st.number_input("Employee Salary per Year (BDT)", min_value=0.0, value=st.session_state.financial_data["salary_payment"], step=10000.0)
+    project_lifetime = st.number_input("Project Lifetime (Years)", min_value=1, value=st.session_state.financial_data["project_lifetime"], step=1)
 
     if st.button("Next - Results"):
+        # Update session state with calculated values
+        st.session_state.financial_data["electricity_cost"] = electricity_cost
+        st.session_state.financial_data["marketing_cost"] = marketing_cost
+        st.session_state.financial_data["maintenance_cost"] = maintenance_cost
+        st.session_state.financial_data["fingerlings_cost"] = fingerlings_cost
+        st.session_state.financial_data["total_fingerling_cost"] = total_fingerling_cost
+        st.session_state.financial_data["fcr"] = fcr
+        st.session_state.financial_data["feed_cost_per_kg"] = feed_cost_per_kg
+        st.session_state.financial_data["feed_cost"] = feed_cost
+        st.session_state.financial_data["selling_price"] = selling_price
+        st.session_state.financial_data["salary_payment"] = salary_payment
+        st.session_state.financial_data["project_lifetime"] = project_lifetime
         st.session_state.current_section = "Results"
 
 # Results Section
@@ -312,16 +324,18 @@ if st.session_state.current_section == "Results":
         st.session_state.financial_data["construction_labor_cost"]
     )
 
-    # Recalculate total_fingerling_cost in case it’s not set
+    # Recalculate all costs to ensure consistency
     fingerling_quantity = (st.session_state.plan_data["yearly_production"] * 1000) / 40
     total_fingerling_cost = st.session_state.financial_data["fingerlings_cost"] * fingerling_quantity
+    yearly_feed_requirement = st.session_state.financial_data["fcr"] * st.session_state.plan_data["yearly_production"]
+    feed_cost = yearly_feed_requirement * st.session_state.financial_data["feed_cost_per_kg"]
 
     operational_cost = (
         st.session_state.financial_data["electricity_cost"] +
         st.session_state.financial_data["marketing_cost"] +
         st.session_state.financial_data["maintenance_cost"] +
         total_fingerling_cost +
-        st.session_state.financial_data["feed_cost"] +
+        feed_cost +
         st.session_state.financial_data["salary_payment"]
     )
     revenue = st.session_state.plan_data["yearly_production"] * st.session_state.financial_data["selling_price"]
