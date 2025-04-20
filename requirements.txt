@@ -1,6 +1,6 @@
-reportlab==4.2.2
+streamlit==1.37.1
+pandas==2.2.2  # Downgrade to match numpy
 numpy==2.2.2
 numpy-financial==1.0.0
-pandas==2.2.3
-streamlit==1.37.1
 fpdf2==2.7.10
+reportlab==4.2.2
