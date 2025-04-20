@@ -1,7 +1,11 @@
 import streamlit as st
 import numpy_financial as npf
 import pandas as pd
-from fpdf2 import FPDF  # Updated import
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import mm
 import numpy as np
 import math
 import io
@@ -82,62 +86,67 @@ def print_results(initial_investment, estimated_revenue, operational_cost, payba
             mime="application/pdf"
         )
 
-# Function to generate PDF report (professional look, more results, elaborated analysis)
+# Function to generate PDF report using reportlab
 def generate_pdf_report(initial_investment, estimated_revenue, operational_cost, payback_period, irr, cash_flow_data, total_volume, tank_diameter, volume_per_tank):
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
+    pdf_buffer = io.BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4, topMargin=15*mm, bottomMargin=15*mm, leftMargin=10*mm, rightMargin=10*mm)
+    styles = getSampleStyleSheet()
+    elements = []
 
     # Page Border
-    pdf.set_line_width(0.5)
-    pdf.rect(5, 5, 200, 287)  # Border around entire page (210mm x 297mm - 5mm padding)
+    doc.drawBoundary = lambda canv: canv.rect(5*mm, 5*mm, 200*mm, 287*mm, stroke=1, fill=0)
 
-    # Title with Background
-    pdf.set_fill_color(230, 230, 230)  # Light gray
-    pdf.set_font("Times", 'B', size=14)
-    pdf.cell(0, 10, txt="Cost-Benefit Analysis Report", ln=True, align="C", fill=True)
-    pdf.ln(5)
+    # Title
+    title_style = styles['Title']
+    title_style.fontSize = 14
+    title_style.textColor = colors.black
+    title = Paragraph("Cost-Benefit Analysis Report", title_style)
+    elements.append(title)
+    elements.append(Spacer(1, 5*mm))
 
     # Project Overview
-    pdf.set_font("Times", 'B', size=12)
-    pdf.cell(0, 7, txt="Project Overview", ln=True, align='L')
-    pdf.set_font("Times", size=10)
+    header_style = styles['Heading2']
+    header_style.fontSize = 12
+    elements.append(Paragraph("Project Overview", header_style))
+    body_style = styles['Normal']
+    body_style.fontSize = 10
     irr_display = "N/A" if (pd.isna(irr) or irr is None) else f"{round(irr * 100, 2)}%"
     annual_profit = estimated_revenue - operational_cost
     cash_flow = [-initial_investment] + [annual_profit] * (len(cash_flow_data) - 1)
-    npv = round(npf.npv(0.10, cash_flow), 0)  # NPV at 10% discount rate
-    report_text = (
-        f"Investment: {initial_investment:,.0f} BDT  Revenue/Yr: {estimated_revenue:,.0f} BDT  Cost/Yr: {operational_cost:,.0f} BDT\n"
-        f"Profit/Yr: {annual_profit:,.0f} BDT  Payback: {payback_period if payback_period is not None else 'N/A'} yrs  IRR: {irr_display}  NPV (10%): {npv:,.0f} BDT\n"
+    npv = round(npf.npv(0.10, cash_flow), 0)
+    overview_text = (
+        f"Investment: {initial_investment:,.0f} BDT  Revenue/Yr: {estimated_revenue:,.0f} BDT  Cost/Yr: {operational_cost:,.0f} BDT<br/>"
+        f"Profit/Yr: {annual_profit:,.0f} BDT  Payback: {payback_period if payback_period is not None else 'N/A'} yrs  IRR: {irr_display}  NPV (10%): {npv:,.0f} BDT<br/>"
         f"Water: {total_volume} m³  Tank Dia.: {tank_diameter} m  Vol./Tank: {volume_per_tank} m³"
     )
-    pdf.multi_cell(0, 5, report_text)
-    pdf.ln(5)
+    elements.append(Paragraph(overview_text, body_style))
+    elements.append(Spacer(1, 5*mm))
 
     # Cash Flow Chart
-    pdf.set_font("Times", 'B', size=12)
-    pdf.cell(0, 7, txt="Cash Flow Chart", ln=True, align='L')
-    pdf.set_font("Times", 'B', size=10)
-    pdf.set_fill_color(240, 240, 240)  # Very light gray for table header
-    pdf.cell(25, 6, "Year", border=1, align="C", fill=True)
-    pdf.cell(40, 6, "Cash In", border=1, align="C", fill=True)
-    pdf.cell(40, 6, "Cash Out", border=1, align="C", fill=True)
-    pdf.cell(55, 6, "Cumulative CF", border=1, align="C", fill=True)
-    pdf.ln()
-
-    pdf.set_font("Times", size=10)
+    elements.append(Paragraph("Cash Flow Chart", header_style))
+    table_data = [["Year", "Cash In", "Cash Out", "Cumulative CF"]]
     for i, row in cash_flow_data.iterrows():
-        pdf.cell(25, 5, str(int(row['Year'])), border=1, align="C")
-        pdf.cell(40, 5, f"{int(row['Cash In']):,}", border=1, align="R")
-        pdf.cell(40, 5, f"{int(row['Cash Out']):,}", border=1, align="R")
-        pdf.cell(55, 5, f"{int(row['Cumulative Cash Flow']):,}", border=1, align="R")
-        pdf.ln()
-    pdf.ln(4)
+        table_data.append([
+            str(int(row['Year'])),
+            f"{int(row['Cash In']):,}",
+            f"{int(row['Cash Out']):,}",
+            f"{int(row['Cumulative Cash Flow']):,}"
+        ])
+    table = Table(table_data, colWidths=[25*mm, 40*mm, 40*mm, 55*mm])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+        ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 4*mm))
 
-    # Financial Analysis (Elaborated)
-    pdf.set_font("Times", 'B', size=12)
-    pdf.cell(0, 7, txt="Financial Analysis", ln=True)
-    pdf.set_font("Times", size=10)
+    # Financial Analysis
+    elements.append(Paragraph("Financial Analysis", header_style))
     if pd.isna(irr) or irr is None:
         analysis_text = "IRR unavailable; cash flows undefined. Profitability unclear."
     elif irr > 0.20:
@@ -146,13 +155,11 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         analysis_text = f"IRR {irr:.2%} offers solid returns above 10%. Payback in {payback_period} yrs is reasonable, with NPV {npv:,.0f} BDT showing positive value."
     else:
         analysis_text = f"IRR {irr:.2%} below 10% suggests modest returns. Payback in {payback_period if payback_period is not None else 'N/A'} yrs and NPV {npv:,.0f} BDT need scrutiny."
-    pdf.multi_cell(0, 5, analysis_text)
-    pdf.ln(4)
+    elements.append(Paragraph(analysis_text, body_style))
+    elements.append(Spacer(1, 4*mm))
 
     # Conclusion
-    pdf.set_font("Times", 'B', size=12)
-    pdf.cell(0, 7, txt="Conclusion", ln=True)
-    pdf.set_font("Times", size=10)
+    elements.append(Paragraph("Conclusion", header_style))
     if pd.isna(irr) or irr is None:
         conclusion_text = "Financial viability unclear due to undefined cash flows. More data is needed for assessment."
     elif irr > 0.20 and payback_period is not None and payback_period < 3:
@@ -161,10 +168,9 @@ def generate_pdf_report(initial_investment, estimated_revenue, operational_cost,
         conclusion_text = "Low IRR or long payback indicates risks. Consider cost reduction or revenue enhancement strategies."
     else:
         conclusion_text = "Moderate viability with decent returns by 2030. Positive NPV suggests value, but review market trends and costs before proceeding."
-    pdf.multi_cell(0, 5, conclusion_text)
+    elements.append(Paragraph(conclusion_text, body_style))
 
-    pdf_buffer = io.BytesIO()
-    pdf.output(dest='F', name=pdf_buffer)
+    doc.build(elements)
     pdf_buffer.seek(0)
     return pdf_buffer
 
